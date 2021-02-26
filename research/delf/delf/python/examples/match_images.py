@@ -82,25 +82,37 @@ def main(unused_argv):
                               residual_threshold=20,
                               max_trials=1000)
 
-  print(f'Found {sum(inliers)} inliers')
+  num_inliers = sum(inliers)
+  print(f'Found {num_inliers} inliers')
 
   # Visualize correspondences, and save to file.
-  _, ax = plt.subplots()
   img_1 = mpimg.imread(cmd_args.image_1_path)
   img_2 = mpimg.imread(cmd_args.image_2_path)
+  # Visualize correspondences, and save to file.
   inlier_idxs = np.nonzero(inliers)[0]
-  feature.plot_matches(
-      ax,
-      img_1,
-      img_2,
-      locations_1_to_use,
-      locations_2_to_use,
-      np.column_stack((inlier_idxs, inlier_idxs)),
-      matches_color='b')
-  ax.axis('off')
-  ax.set_title('DELF correspondences')
-  plt.savefig(cmd_args.output_image)
-
+  num_image = num_inliers // 5
+  start_index = 0
+  for i in range(num_image):
+    _, ax = plt.subplots()
+    start_index = 5 * i
+    current_idxs = inlier_idxs[start_index : start_index + 5]
+    print(f'current indexes: {current_idxs}')
+    current_locations_1 = locations_1_to_use[current_idxs]
+    print(f'current location 1: {current_locations_1}')
+    current_locations_2 = locations_2_to_use[current_idxs]
+    print(f'current location 2: {current_locations_2}')
+    idxs_tmp = [0, 1, 2, 3, 4]
+    feature.plot_matches(
+        ax,
+        img_1,
+        img_2,
+        current_locations_1,
+        current_locations_2,
+        np.column_stack((idxs_tmp, idxs_tmp)),
+        matches_color='b')
+    ax.axis('off')
+    ax.set_title('DELF correspondences')
+    plt.savefig(f'{cmd_args.output_image}_{i}.png')
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()

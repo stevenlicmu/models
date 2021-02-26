@@ -107,7 +107,7 @@ install_object_detection() {
   # Installs the object detection package from tensorflow/models/research.
   echo "Installing object detection"
   pushd . > /dev/null
-  cd ../../../..
+  cd ../../../../
   export PYTHONPATH=$PYTHONPATH:`pwd`
   pip3 install .
   local exit_code=$?
