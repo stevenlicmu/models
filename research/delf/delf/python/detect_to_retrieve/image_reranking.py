@@ -193,7 +193,7 @@ def RerankByGeometricVerification(input_ranks,
                                   index_names,
                                   query_features_dir,
                                   index_features_dir,
-                                  junk_ids,
+                                  # junk_ids,
                                   local_feature_extension=_DELF_EXTENSION,
                                   ransac_seed=None,
                                   descriptor_matching_threshold=0.9,
@@ -245,8 +245,7 @@ def RerankByGeometricVerification(input_ranks,
   # Filter out junk images from list that will be re-ranked.
   input_ranks_for_gv = []
   for ind in input_ranks:
-    if ind not in junk_ids:
-      input_ranks_for_gv.append(ind)
+    input_ranks_for_gv.append(ind)
   num_to_rerank = min(_NUM_TO_RERANK, len(input_ranks_for_gv))
 
   # Load query image features.

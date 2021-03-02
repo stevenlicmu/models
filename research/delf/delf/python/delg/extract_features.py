@@ -72,7 +72,7 @@ _DELG_LOCAL_EXTENSION = '.delg_local'
 _IMAGE_EXTENSION = '.jpg'
 
 # Pace to report extraction log.
-_STATUS_CHECK_ITERATIONS = 50
+_STATUS_CHECK_ITERATIONS = 5
 
 
 def main(argv):
@@ -80,9 +80,8 @@ def main(argv):
     raise RuntimeError('Too many command-line arguments.')
 
   # Read list of images from dataset file.
-  print('Reading list of images from dataset file...')
-  query_list, index_list, ground_truth = dataset.ReadDatasetFile(
-      FLAGS.dataset_file_path)
+  query_list = ['t1', 'y1', 'z1',]
+  index_list = ['t2', 't3', 't4', 't5', 'y2', 'y3', 'y4', 'y5', 'z2', 'z3', 'z4', 'z5',]
   if FLAGS.image_set == 'query':
     image_list = query_list
   else:
@@ -135,13 +134,13 @@ def main(argv):
 
     pil_im = utils.RgbLoader(input_image_filename)
     resize_factor = 1.0
-    if FLAGS.image_set == 'query':
-      # Crop query image according to bounding box.
-      original_image_size = max(pil_im.size)
-      bbox = [int(round(b)) for b in ground_truth[i]['bbx']]
-      pil_im = pil_im.crop(bbox)
-      cropped_image_size = max(pil_im.size)
-      resize_factor = cropped_image_size / original_image_size
+    # if FLAGS.image_set == 'query':
+    #   # Crop query image according to bounding box.
+    #   original_image_size = max(pil_im.size)
+    #   bbox = [int(round(b)) for b in ground_truth[i]['bbx']]
+    #   pil_im = pil_im.crop(bbox)
+    #   cropped_image_size = max(pil_im.size)
+    #   resize_factor = cropped_image_size / original_image_size
 
     im = np.array(pil_im)
 
