@@ -72,7 +72,7 @@ _DELG_LOCAL_EXTENSION = '.delg_local'
 _IMAGE_EXTENSION = '.jpg'
 
 # Pace to report extraction log.
-_STATUS_CHECK_ITERATIONS = 5
+# _STATUS_CHECK_ITERATIONS = 5
 
 
 def main(argv):
@@ -80,8 +80,8 @@ def main(argv):
     raise RuntimeError('Too many command-line arguments.')
 
   # Read list of images from dataset file.
-  query_list = ['t1', 'y1', 'z1',]
-  index_list = ['t2', 't3', 't4', 't5', 'y2', 'y3', 'y4', 'y5', 'z2', 'z3', 'z4', 'z5',]
+  query_list = ['t1', 'y1', 'z1', 'x1', 'j1']
+  index_list = ['t2', 't3', 't4', 't5', 'y2', 'y3', 'y4', 'y5', 'z2', 'z3', 'z4', 'z5', 'x2', 'x3', 'x4', 'x5', 'x6', 'j2', 'j3', 'j4', 'j5', 'j6']
   if FLAGS.image_set == 'query':
     image_list = query_list
   else:
@@ -100,17 +100,9 @@ def main(argv):
 
   extractor_fn = extractor.MakeExtractor(config)
 
-  start = time.time()
-  for i in range(num_images):
-    if i == 0:
-      print('Starting to extract features...')
-    elif i % _STATUS_CHECK_ITERATIONS == 0:
-      elapsed = (time.time() - start)
-      print('Processing image %d out of %d, last %d '
-            'images took %f seconds' %
-            (i, num_images, _STATUS_CHECK_ITERATIONS, elapsed))
-      start = time.time()
-
+  
+  print('Starting to extract features...')
+  for i in range(num_images):    
     image_name = image_list[i]
     input_image_filename = os.path.join(FLAGS.images_dir,
                                         image_name + _IMAGE_EXTENSION)
@@ -147,7 +139,10 @@ def main(argv):
     # Extract and save features.
     extracted_features = extractor_fn(im, resize_factor)
     if config.use_global_features:
+      start = time.time()
       global_descriptor = extracted_features['global_descriptor']
+      elapsed = (time.time() - start)
+      print(f'Processing image {i} out of {num_images}, current image taken time {elapsed}')
       datum_io.WriteToFile(global_descriptor, output_global_feature_filename)
     if config.use_local_features:
       locations = extracted_features['local_features']['locations']
@@ -156,7 +151,6 @@ def main(argv):
       attention = extracted_features['local_features']['attention']
       feature_io.WriteToFile(output_local_feature_filename, locations,
                              feature_scales, descriptors, attention)
-
 
 if __name__ == '__main__':
   app.run(main)

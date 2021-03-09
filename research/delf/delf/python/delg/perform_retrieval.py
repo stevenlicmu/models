@@ -76,7 +76,7 @@ _STATUS_CHECK_LOAD_ITERATIONS = 50
 # Output file names.
 _METRICS_FILENAME = 'metrics.txt'
 
-_COLUMN_TO_NAME = {0: 't2', 1: 't3', 2: 't4', 3: 't5', 4: 'y2', 5: 'y3', 6: 'y4', 7: 'y5', 8: 'z2', 9: 'z3', 10: 'z4', 12: 'z5'}
+_COLUMN_TO_NAME = {0: 't2', 1: 't3', 2: 't4', 3: 't5', 4: 'y2', 5: 'y3', 6: 'y4', 7: 'y5', 8: 'z2', 9: 'z3', 10: 'z4', 11: 'z5', 12: 'x2', 13: 'x3', 14: 'x4', 15: 'x5', 16: 'x6', 17: 'j2', 18: 'j3', 19: 'j4', 20: 'j5', 21: 'j6'}
 
 def _ReadDelgGlobalDescriptors(input_dir, image_list):
   """Reads DELG global features.
@@ -114,8 +114,8 @@ def main(argv):
   if len(argv) > 1:
     raise RuntimeError('Too many command-line arguments.')
 
-  query_list = ['t1', 'y1', 'z1']
-  index_list = ['t2', 't3', 't4', 't5', 'y2', 'y3', 'y4', 'y5', 'z2', 'z3', 'z4', 'z5']
+  query_list = ['t1', 'y1', 'z1', 'x1', 'j1']
+  index_list = ['t2', 't3', 't4', 't5', 'y2', 'y3', 'y4', 'y5', 'z2', 'z3', 'z4', 'z5', 'x2', 'x3', 'x4', 'x5', 'x6', 'j2', 'j3', 'j4', 'j5', 'j6']
   num_query_images = len(query_list)
   num_index_images = len(index_list)
   print(f'here is the query list: {query_list}')
@@ -134,6 +134,7 @@ def main(argv):
   # with geometric verification.
   ranks_before_gv = np.zeros([num_query_images, num_index_images],
                              dtype='int32')
+  ranks_sim_before_gv = []
   if FLAGS.use_geometric_verification:
     medium_ranks_after_gv = np.zeros([num_query_images, num_index_images],
                                      dtype='int32')
@@ -143,10 +144,15 @@ def main(argv):
 
     # Compute similarity between global descriptors.
     similarities = np.dot(index_global_features, query_global_features[i])
+    # print(f'similarities matrix is: {similarities}')
     ranks_before_gv[i] = np.argsort(-similarities)
+    ranks_sim_before_gv_row = [f'{_COLUMN_TO_NAME.get(index, "None")}: {similarities[index]}' for index in ranks_before_gv[i]]
+    # ranks_sim_before_gv.append(ranks_sim_before_gv_row)
+    print(f'similarities with file name: {ranks_sim_before_gv_row}')
 
     # Re-rank using geometric verification.
     if FLAGS.use_geometric_verification:
+      print('Performing local feature match: ')
       medium_ranks_after_gv[i] = image_reranking.RerankByGeometricVerification(
           input_ranks=ranks_before_gv[i],
           initial_scores=similarities,
@@ -166,7 +172,9 @@ def main(argv):
 
   
   print(f'ranks_before_gv: {ranks_before_gv}')
-  print(f'ranks_after_gv: {medium_ranks_after_gv}')
+  # print(f'ranks_with_similarity_before_gv: {ranks_sim_before_gv}')
+
+  # print(f'ranks_after_gv: {medium_ranks_after_gv}')
 
 if __name__ == '__main__':
   app.run(main)
