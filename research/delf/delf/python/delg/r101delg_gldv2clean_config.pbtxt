@@ -1,4 +1,4 @@
-use_local_features: true
+use_local_features: false
 use_global_features: true
 model_path: "parameters/r101delg_gldv2clean_20200914"
 image_scales: 0.25
